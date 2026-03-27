@@ -14,24 +14,37 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async signIn({ user, profile }) {
       if (!profile?.login) return false
 
-      await prisma.user.upsert({
-        where: { githubId: String(profile.id) },
-        update: {
-          username: profile.login as string,
-          name: user.name || profile.name as string || null,
-          email: user.email || null,
-          avatarUrl: user.image || profile.avatar_url as string || null,
-          bio: (profile.bio as string) || null,
-        },
-        create: {
-          githubId: String(profile.id),
-          username: profile.login as string,
-          name: user.name || profile.name as string || null,
-          email: user.email || null,
-          avatarUrl: user.image || profile.avatar_url as string || null,
-          bio: (profile.bio as string) || null,
-        },
-      })
+      try {
+        // Delete any demo user with same username but different githubId
+        await prisma.user.deleteMany({
+          where: {
+            username: profile.login as string,
+            githubId: { not: String(profile.id) },
+          },
+        })
+
+        await prisma.user.upsert({
+          where: { githubId: String(profile.id) },
+          update: {
+            username: profile.login as string,
+            name: user.name || (profile.name as string) || null,
+            email: user.email || null,
+            avatarUrl: user.image || (profile.avatar_url as string) || null,
+            bio: (profile.bio as string) || null,
+          },
+          create: {
+            githubId: String(profile.id),
+            username: profile.login as string,
+            name: user.name || (profile.name as string) || null,
+            email: user.email || null,
+            avatarUrl: user.image || (profile.avatar_url as string) || null,
+            bio: (profile.bio as string) || null,
+          },
+        })
+      } catch (error) {
+        console.error('SignIn error:', error)
+        return false
+      }
       return true
     },
     async jwt({ token, profile }) {
