@@ -2,7 +2,10 @@
   "name": "ccrank",
   "version": "1.0.1",
   "description": "Claude Code developer leaderboard — ranked by what you BUILD, not what you spend",
-  "files": ["cli/index.mjs", "README.md"],
+  "files": [
+    "cli/index.mjs",
+    "README.md"
+  ],
   "scripts": {
     "dev": "next dev",
     "postinstall": "prisma generate",
@@ -15,28 +18,30 @@
     "db:studio": "prisma studio"
   },
   "dependencies": {
-    "next": "^15.3.2",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0",
-    "next-auth": "^5.0.0-beta.25",
     "@auth/prisma-adapter": "^2.7.4",
     "@prisma/client": "^6.6.0",
+    "@vercel/analytics": "^2.0.1",
+    "@vercel/speed-insights": "^2.0.0",
     "clsx": "^2.1.1",
-    "tailwind-merge": "^3.0.2",
     "framer-motion": "^12.6.3",
+    "lucide-react": "^0.475.0",
+    "next": "^15.3.2",
+    "next-auth": "^5.0.0-beta.25",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
     "recharts": "^2.15.3",
-    "lucide-react": "^0.475.0"
+    "tailwind-merge": "^3.0.2"
   },
   "devDependencies": {
-    "typescript": "^5.8.3",
+    "@tailwindcss/postcss": "^4.1.4",
     "@types/node": "^22.14.0",
     "@types/react": "^19.1.0",
     "@types/react-dom": "^19.1.0",
+    "eslint": "^9.24.0",
+    "eslint-config-next": "^15.3.2",
     "prisma": "^6.6.0",
     "tailwindcss": "^4.1.4",
-    "@tailwindcss/postcss": "^4.1.4",
-    "eslint": "^9.24.0",
-    "eslint-config-next": "^15.3.2"
+    "typescript": "^5.8.3"
   },
   "bin": {
     "ccrank": "cli/index.mjs"
