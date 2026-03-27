@@ -100,10 +100,14 @@ function findGitRepos(dir) {
 
 function analyzeGitRepo(repoPath, since) {
   const sinceStr = since.toISOString().split('T')[0]
-  const authorEmail = exec('git config user.email', repoPath)
-  if (!authorEmail) return null
+  const authorEmail = exec('git config user.email', repoPath) || exec('git config --global user.email')
 
-  const authorFilter = `--author=${authorEmail}`
+  // If no email, try to get it from the most recent commit
+  const fallbackEmail = !authorEmail ? exec('git log -1 --format="%ae"', repoPath) : ''
+  const email = authorEmail || fallbackEmail
+
+  // If still no email, skip author filter (count all commits)
+  const authorFilter = email ? `--author=${email}` : ''
   const sinceFilter = `--since=${sinceStr}`
 
   // Commit count
