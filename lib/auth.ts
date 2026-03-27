@@ -3,7 +3,6 @@ import GitHub from 'next-auth/providers/github'
 import { prisma } from './prisma'
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  debug: true,
   trustHost: true,
   pages: {
     error: '/auth-error',
