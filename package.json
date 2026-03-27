@@ -1,8 +1,8 @@
 {
   "name": "ccrank",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Claude Code developer leaderboard — ranked by what you BUILD, not what you spend",
-  "private": true,
+  "files": ["cli/index.mjs", "README.md"],
   "scripts": {
     "dev": "next dev",
     "postinstall": "prisma generate",
@@ -39,6 +39,6 @@
     "eslint-config-next": "^15.3.2"
   },
   "bin": {
-    "ccrank": "./cli/index.mjs"
+    "ccrank": "cli/index.mjs"
   }
 }
