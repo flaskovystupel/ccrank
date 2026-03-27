@@ -18,7 +18,7 @@ import { homedir } from 'os'
 
 // ─── CONFIG ───────────────────────────────────────────────────────────────────
 
-const API_URL = process.env.CCRANK_API_URL || 'https://ccrank.vercel.app'
+const API_URL = process.env.CCRANK_API_URL || 'https://ccrank-five.vercel.app'
 const CLAUDE_DIR = join(homedir(), '.claude')
 const args = process.argv.slice(2)
 
