@@ -13,7 +13,7 @@ export async function GET(req: NextRequest) {
 
   const [scores, total] = await Promise.all([
     prisma.score.findMany({
-      where: { period: period as 'DAYS_7' | 'DAYS_30' | 'ALL_TIME' },
+      where: { period },
       include: {
         user: {
           select: {
@@ -27,9 +27,7 @@ export async function GET(req: NextRequest) {
       skip: (page - 1) * limit,
       take: limit,
     }),
-    prisma.score.count({
-      where: { period: period as 'DAYS_7' | 'DAYS_30' | 'ALL_TIME' },
-    }),
+    prisma.score.count({ where: { period } }),
   ])
 
   const leaderboard = scores.map((s, i) => ({

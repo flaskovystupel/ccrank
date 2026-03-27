@@ -69,7 +69,7 @@ export async function POST(req: NextRequest) {
         languages: stats.languages,
         periodStart: new Date(body.periodStart || Date.now() - stats.periodDays * 86400000),
         periodEnd: new Date(body.periodEnd || Date.now()),
-        period: period as 'DAYS_7' | 'DAYS_30' | 'ALL_TIME',
+        period,
       },
     })
 
@@ -77,10 +77,10 @@ export async function POST(req: NextRequest) {
     const scores = calculateScore(stats)
 
     // Get total users for percentile
-    const totalUsers = await prisma.score.count({ where: { period: period as 'DAYS_7' | 'DAYS_30' | 'ALL_TIME' } })
+    const totalUsers = await prisma.score.count({ where: { period } })
     const usersBelow = await prisma.score.count({
       where: {
-        period: period as 'DAYS_7' | 'DAYS_30' | 'ALL_TIME',
+        period,
         overallScore: { lt: scores.overallScore },
       },
     })
@@ -90,16 +90,16 @@ export async function POST(req: NextRequest) {
     // Upsert score
     const rank = await prisma.score.count({
       where: {
-        period: period as 'DAYS_7' | 'DAYS_30' | 'ALL_TIME',
+        period,
         overallScore: { gt: scores.overallScore },
       },
     }) + 1
 
-    const score = await prisma.score.upsert({
+    await prisma.score.upsert({
       where: {
         userId_period: {
           userId: user.id,
-          period: period as 'DAYS_7' | 'DAYS_30' | 'ALL_TIME',
+          period,
         },
       },
       update: {
@@ -111,7 +111,7 @@ export async function POST(req: NextRequest) {
       },
       create: {
         userId: user.id,
-        period: period as 'DAYS_7' | 'DAYS_30' | 'ALL_TIME',
+        period,
         ...scores,
         rank,
         percentile,

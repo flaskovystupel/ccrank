@@ -5,6 +5,7 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model User {
@@ -50,7 +51,7 @@ model Submission {
   // Time range
   periodStart   DateTime
   periodEnd     DateTime
-  period        Period    @default(DAYS_30)
+  period        String    @default("DAYS_30")
 
   submittedAt   DateTime  @default(now())
 
@@ -63,7 +64,7 @@ model Score {
   userId        String
   user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  period        Period    @default(DAYS_30)
+  period        String    @default("DAYS_30")
 
   // Score components (0-1000)
   velocityScore    Int     @default(0)
@@ -75,26 +76,11 @@ model Score {
   // Ranking
   rank          Int        @default(0)
   percentile    Float      @default(0)
-  tier          Tier       @default(BRONZE)
+  tier          String     @default("BRONZE")
 
   calculatedAt  DateTime   @default(now())
 
   @@unique([userId, period])
-  @@index([period, overallScore(sort: Desc)])
+  @@index([period, overallScore])
   @@index([period, rank])
-}
-
-enum Period {
-  DAYS_7
-  DAYS_30
-  ALL_TIME
-}
-
-enum Tier {
-  BRONZE
-  SILVER
-  GOLD
-  PLATINUM
-  DIAMOND
-  LEGENDARY
 }
