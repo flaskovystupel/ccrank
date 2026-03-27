@@ -1,0 +1,100 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  githubId      String    @unique
+  username      String    @unique
+  name          String?
+  email         String?
+  avatarUrl     String?
+  bio           String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  submissions   Submission[]
+  scores        Score[]
+
+  @@index([username])
+}
+
+model Submission {
+  id            String    @id @default(cuid())
+  userId        String
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Claude Code stats
+  totalTokensIn    BigInt   @default(0)
+  totalTokensOut   BigInt   @default(0)
+  totalCacheTokens BigInt   @default(0)
+  totalConversations Int    @default(0)
+  totalCost        Float    @default(0)
+
+  // Git stats
+  totalCommits     Int      @default(0)
+  totalLinesAdded  Int      @default(0)
+  totalLinesRemoved Int     @default(0)
+  totalFilesChanged Int     @default(0)
+  totalFilesCreated Int     @default(0)
+  totalRepos       Int      @default(0)
+  activeDays       Int      @default(0)
+  streakDays       Int      @default(0)
+  languages        String[] @default([])
+
+  // Time range
+  periodStart   DateTime
+  periodEnd     DateTime
+  period        Period    @default(DAYS_30)
+
+  submittedAt   DateTime  @default(now())
+
+  @@index([userId, period])
+  @@index([submittedAt])
+}
+
+model Score {
+  id            String    @id @default(cuid())
+  userId        String
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  period        Period    @default(DAYS_30)
+
+  // Score components (0-1000)
+  velocityScore    Int     @default(0)
+  efficiencyScore  Int     @default(0)
+  impactScore      Int     @default(0)
+  consistencyScore Int     @default(0)
+  overallScore     Int     @default(0)
+
+  // Ranking
+  rank          Int        @default(0)
+  percentile    Float      @default(0)
+  tier          Tier       @default(BRONZE)
+
+  calculatedAt  DateTime   @default(now())
+
+  @@unique([userId, period])
+  @@index([period, overallScore(sort: Desc)])
+  @@index([period, rank])
+}
+
+enum Period {
+  DAYS_7
+  DAYS_30
+  ALL_TIME
+}
+
+enum Tier {
+  BRONZE
+  SILVER
+  GOLD
+  PLATINUM
+  DIAMOND
+  LEGENDARY
+}
