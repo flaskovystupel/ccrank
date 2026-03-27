@@ -5,6 +5,9 @@ import { prisma } from './prisma'
 export const { handlers, auth, signIn, signOut } = NextAuth({
   debug: true,
   trustHost: true,
+  pages: {
+    error: '/auth-error',
+  },
   providers: [
     GitHub({
       clientId: process.env.GITHUB_CLIENT_ID!,
